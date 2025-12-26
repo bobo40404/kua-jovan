@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jovan Fitness Gym — Transform Your Body</title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #0b0b0f;
+      --card: #121219;
+      --text: #e7e7ea;
+      --muted: #b7b9c7;
+      --primary: #ff4c4c;
+      --primary-2: #ff7b6e;
+      --accent: #4ce1ff;
+      --glow: 0 10px 30px rgba(255, 76, 76, 0.35);
+      --radius: 16px;
+      --maxw: 1100px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(76, 225, 255, 0.07), transparent 60%), linear-gradient(180deg, #0a0a0e, #0b0b0f 40%, #0d0d13);
+    }
+
+    /* MUSIC TOGGLE BUTTON */
+    .music-toggle {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 3000;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: none;
+      color: #000;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--glow);
+      transition: transform 0.3s ease;
+    }
+    .music-toggle:hover { transform: scale(1.1); }
+    .music-toggle.playing { animation: pulse-glow 2s infinite; }
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 0 0 rgba(255, 76, 76, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 76, 76, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 76, 76, 0); }
+    }
+
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 1.4rem; }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); margin: 50px 0; }
+
+    /* NAV */
+    .nav { position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(12px); background: rgba(9, 9, 12, 0.8); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.8rem 1.2rem; display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; font-family: "Bebas Neue"; font-size: 1.6rem; line-height: 1; white-space: nowrap; }
+    .brand-logo { width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; object-fit: cover; box-shadow: var(--glow); }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--primary); }
+    .hamburger { display: none; background: none; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 1.2rem; }
+    .mobile-menu { display: none; flex-direction: column; background: var(--card); border-bottom: 1px solid rgba(255,255,255,0.1); position: absolute; width: 100%; left: 0; top: 100%; padding: 10px 0; }
+    .mobile-menu a { padding: 12px 20px; color: var(--text); text-decoration: none; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .mobile-menu.show { display: flex; }
+    @media (max-width: 768px) { .nav-links { display: none; } .hamburger { display: block; } }
+
+    /* HERO */
+    .hero { position: relative; min-height: 70vh; display: grid; place-items: center; text-align: center; padding: 3rem 1.4rem; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1600') center/cover; opacity: 0.2; z-index: -1; }
+    .hero-title { font-family: "Bebas Neue"; font-size: clamp(2.5rem, 6vw, 5rem); margin: 0; }
+    .hero-sub { color: var(--muted); margin-bottom: 30px; }
+
+    /* WHY CHOOSE US */
+    .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center; }
+    .feature-item { padding: 20px; }
+    .feature-icon { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; }
+    .feature-item h3 { font-family: 'Bebas Neue'; font-size: 1.3rem; margin: 10px 0; }
+    .feature-item p { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+
+    /* GRID LAYOUTS */
+    .grid-4 { display: grid; gap: 20px; grid-template-columns: repeat(4, 1fr); }
+    .grid-2 { display: grid; gap: 25px; grid-template-columns: 1fr 1fr; }
+
+    /* CARDS */
+    .promo-card { position: relative; background: var(--card); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s; height: 100%; }
+    .promo-card:hover { transform: translateY(-8px); border-color: var(--primary); }
+    .promo-media { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+    .promo-body { padding: 24px; flex-grow: 1; display: flex; flex-direction: column; }
+    .promo-price { font-weight: 800; color: var(--accent); margin-bottom: 12px; font-size: 1.2rem; line-height: 1.4; }
+    .badge { position: absolute; top: 15px; left: 15px; background: var(--primary); color: #fff; font-weight: 900; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; z-index: 2; }
+
+    /* BUTTONS */
+    .btn-primary { padding: 12px 24px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #000; transition: 0.3s; width: 100%; text-decoration: none; display: inline-block; text-align: center; font-family: inherit; }
+    .btn-ghost { padding: 12px 24px; border-radius: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-block; }
+
+    /* CAROUSEL */
+    .fac-wrap { border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--card); position: relative; }
+    .carousel-track { display: flex; transition: transform .6s ease-in-out; }
+    .slide { min-width: 100%; position: relative; }
+    .slide img { width: 100%; height: 450px; object-fit: cover; display: block; }
+    .slide-caption { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); padding: 8px 15px; border-radius: 8px; font-weight: 700; }
+
+    /* WHAT'S NEW SECTION */
+    .news-split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 25px; align-items: stretch; }
+    .media-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 450px; }
+    .news-carousel-container { flex-grow: 1; position: relative; overflow: hidden; display: flex; align-items: center; }
+    .news-slide-small { min-width: 100%; padding: 15px; display: flex; align-items: center; justify-content: center; }
+    .news-slide-small iframe, .news-slide-small img { max-height: 450px; width: 100%; max-width: 100%; border-radius: 12px; border: none; object-fit: contain; }
+
+    /* LOCATION & HOURS */
+    .map-box { border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 450px; }
+    .hours-card { background: var(--card); border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: var(--radius); }
+    .hours-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+    /* MODAL */
+    .modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { background: var(--card); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 450px; position: relative; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--muted); }
+    .hub-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 700; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); transition: 0.2s; }
+    .hub-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+
+    /* CONTROLS */
+    .controls { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); }
+    .c-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; }
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+    .dot.active { background: var(--primary); }
+
+    @media (max-width: 1000px) { .grid-4, .features-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 850px) { .news-split, .grid-2, .grid-4, .features-grid { grid-template-columns: 1fr; } .map-box { height: 300px; } }
+  </style>
+</head>
+
+<body>
+  <audio id="bgMusic" loop>
+    <source src="kuajoban.mp3" type="audio/mpeg">
+  </audio>
+  <button class="music-toggle" id="musicToggle" title="Play Music">🎵</button>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand"><img src="logo.jpg" alt="Logo" class="brand-logo"> Jovan Fitness GYM</div>
+      <div class="nav-links">
+        <a href="#home">Home</a><a href="#promos">Rates</a><a href="#facilities">Facilities</a><a href="#whatsnew">What's New</a><a href="#location">Location</a><a href="#contact">Contact</a>
+      </div>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home">Home</a><a href="#promos">Rates</a><a href="#facilities">Facilities</a><a href="#whatsnew">What's New</a><a href="#location">Location</a><a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <header id="home" class="hero">
+    <div class="container">
+      <h1 class="hero-title">Elevate Your Fitness.</h1>
+      <p class="hero-sub">Achieve your fitness goals with state-of-the-art equipment and expert guidance.</p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button class="btn-primary" style="width: auto;" onclick="location.href='#promos'">View Rates</button>
+        <button class="btn-ghost" onclick="location.href='#location'">Visit Us</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="container">
+    <h2 style="font-family: 'Bebas Neue'; font-size: 2.2rem; text-align: center; margin-bottom: 40px;">Why Choose Us?</h2>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">💪</div>
+        <h3>Modern Equipment</h3>
+        <p>Premium machines and free weights designed for all fitness levels.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🥇</div>
+        <h3>Expert Coaching</h3>
+        <p>Our certified trainers help you reach your goals faster and safer.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🧼</div>
+        <h3>Clean & Safe</h3>
+        <p>We maintain high hygiene standards for a comfortable workout environment.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🤝</div>
+        <h3>Great Community</h3>
+        <p>A supportive atmosphere that keeps you motivated every single day.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="promos" class="container">
+    <h2 style="font-family: 'Bebas Neue'; font-size: 2.2rem; margin-bottom: 25px;">Gym Rates & Promos</h2>
+    <div class="grid-4">
+      <div class="promo-card">
+        <span class="badge">DAILY</span>
+        <img class="promo-media" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600" />
+        <div class="promo-body">
+          <h3 style="font-family:'Bebas Neue'; margin:0;">Per Session</h3>
+          <div class="promo-price">
+            Member: ₱60 <br>
+            Non-Member: ₱80
+          </div>
+          <p style="color:var(--muted); font-size:0.9rem; flex-grow:1;">Pay as you go! Perfect for those with busy schedules.</p>
+          <button class="btn-primary" onclick="openPromoModal('Session Rate')">Join Now</button>
+        </div>
+      </div>
+      
+      <div class="promo-card">
+        <span class="badge">MEMBER</span>
+        <img class="promo-media" src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=600" />
+        <div class="promo-body">
+          <h3 style="font-family:'Bebas Neue'; margin:0;">Member Monthly</h3>
+          <div class="promo-price">₱600 / Month</div>
+          <p style="color:var(--muted); font-size:0.9rem; flex-grow:1;">Unlimited access for registered members. Best for consistency.</p>
+          <button class="btn-primary" onclick="openPromoModal('Member Monthly')">Sign Up</button>
+        </div>
+      </div>
+
+      <div class="promo-card">
+        <span class="badge">NON-MEMBER</span>
+        <img class="promo-media" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600" />
+        <div class="promo-body">
+          <h3 style="font-family:'Bebas Neue'; margin:0;">Non-Member Pass</h3>
+          <div class="promo-price">₱1,100 / 2 Mos</div>
+          <p style="color:var(--muted); font-size:0.9rem; flex-grow:1;">Commitment plan for walk-in guests. No membership required.</p>
+          <button class="btn-primary" onclick="openPromoModal('Non-Member Monthly')">Sign Up</button>
+        </div>
+      </div>
+
+      <div class="promo-card">
+        <span class="badge">PROMO</span>
+        <img class="promo-media" src="gymgym.jpg" />
+        <div class="promo-body">
+          <h3 style="font-family:'Bebas Neue'; margin:0;">3 DAYS PROMO</h3>
+          <div class="promo-price">₱100 / 3 Days</div>
+          <p style="color:var(--muted); font-size:0.9rem; flex-grow:1;">Enjoy 3 consecutive days of full gym access at a budget-friendly price. Valid ID required.</p>
+          <button class="btn-primary" onclick="openPromoModal('3-Day Student Promo')">Claim Offer</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="facilities" class="container">
+    <h2 style="font-family: 'Bebas Neue'; font-size: 2.2rem; margin-bottom: 25px;">Our Facilities</h2>
+    <div class="fac-wrap">
+      <div class="carousel-track" id="facTrack">
+        <div class="slide"><img src="gym1.jpeg"/><div class="slide-caption">Jovan Fitness Gym</div></div>
+        <div class="slide"><img src="gym2.jpeg"/><div class="slide-caption">Jovan Fitness Gym</div></div>
+      </div>
+      <div class="controls">
+        <button class="c-btn" id="facPrev">❮</button>
+        <div class="dots" id="facDots"></div>
+        <button class="c-btn" id="facNext">❯</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="whatsnew" class="container">
+    <h2 style="font-family: 'Bebas Neue'; font-size: 2.2rem; margin-bottom: 25px;">What's New? Follow our official social account for updates!</h2>
+    <div class="news-split">
+      <div class="map-box" style="height: auto;">
+        <img src="page.png" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+      <div class="media-box">
+        <div class="news-carousel-container">
+            <div class="carousel-track" id="newsTrack">
+              <div class="news-slide-small"><iframe src="https://www.facebook.com/plugins/video.php?height=497&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F842310031898666%2F&show_text=false&width=560&t=0" width="560" height="497" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe></div>
+              <div class="news-slide-small">
+                  <iframe src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F4824799644412947%2F&show_text=false&width=560&t=0" width="560" height="314" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+              </div>
+            </div>
+        </div>
+        <div class="controls">
+          <button class="c-btn" id="newsPrev">❮</button>
+          <div class="dots" id="newsDots"></div>
+          <button class="c-btn" id="newsNext">❯</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="location" class="container">
+<h2 style="font-family: 'Bebas Neue'; font-size: 2.2rem; margin-bottom: 25px;">Find Us</h2>
+<div class="grid-2">
+<div class="map-box">
+<iframe
+src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3866.5029147576296!2d121.111979!3d14.311317!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d92c5c5f0ee9%3A0x3f94a76d41b315b2!2sJovan%20Fitness%20Gym!5e0!3m2!1sen!2sph!4v1700000000000!5m2!1sen!2sph"
+width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+</div>
+<div class="hours-card">
+<h3 style="color:var(--primary); font-family:'Bebas Neue'; margin-top:0;">Gym Hours</h3>
+<div class="hours-row"><span>Monday - Sunday</span><span>5:00 AM - 12:00 PM</span></div>
+<p style="margin-top:20px; font-size:0.9rem; color:var(--muted); line-height: 1.6;">
+📍 <strong>Blk 1 Lot 1, Dictado Village</strong><br>
+Market Area Barangay Hall,<br>
+City of Santa Rosa, 4026 Laguna
+</p>
+<a href="https://share.google/0AeDi0DG0ksDbmWIP" target="_blank" class="btn-ghost" style="width:100%; text-align:center; margin-top:10px;">Open in Google Maps</a>
+</div>
+</div>
+</section>
+
+  <div class="divider"></div>
+
+  <section id="contact" class="container" style="margin-bottom:80px;">
+    <h2 style="font-family: 'Bebas Neue'; font-size: 2.2rem; margin-bottom: 25px;">Contact Us</h2>
+    <div class="grid-2">
+      <div class="hours-card">
+        <h3 style="color:var(--primary); font-family:'Bebas Neue'; margin-top:0;">Get in Touch</h3>
+        <p>✉️ hello@jovanfitness.ph</p>
+        <p>📞 +639679314390</p>
+        <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+            <a href="https://www.facebook.com/jo.van.739978" target="_blank" class="btn-ghost" style="border-color:#1877F2; color:#1877F2; text-align: center;">Facebook Page</a>
+            <a href="https://wa.me/639679314390" target="_blank" class="btn-ghost" style="border-color:#25d366; color:#25d366; text-align: center;">WhatsApp</a>
+        </div>
+      </div>
+      <div class="hours-card">
+        <form action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="76fdd19b-2fce-41ca-9fc5-9f9684426c48">
+          <input type="hidden" name="subject" value="General Website Inquiry">
+          
+          <input type="text" name="name" placeholder="Full Name" required style="width:100%; padding:12px; margin-bottom:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:8px;">
+          <input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:8px;">
+          <textarea name="message" placeholder="Your Message" rows="3" required style="width:100%; padding:12px; margin-bottom:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:8px;"></textarea>
+          <button class="btn-primary" type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="promoModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <span class="modal-close" onclick="closePromoModal()">×</span>
+      <h2 id="modalTitle" style="font-family:'Bebas Neue'; color:var(--primary); margin-top:0; margin-bottom:5px;">Join Now</h2>
+      
+      <div style="background: rgba(255, 76, 76, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed var(--primary);">
+         <p style="margin:0; font-size: 0.9rem; font-weight: 600;">Inquiry for: <span id="displayPromoName" style="color: var(--accent);">Selected Promo</span></p>
+      </div>
+
+      <form action="https://api.web3forms.com/submit" method="POST" style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
+        <input type="hidden" name="access_key" value="76fdd19b-2fce-41ca-9fc5-9f9684426c48">
+        <input type="hidden" name="Inquiring_About" id="hiddenPromoInput">
+        
+        <input type="text" name="customer_name" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:8px;">
+        <input type="tel" name="phone_number" placeholder="Phone Number" required style="width:100%; padding:12px; margin-bottom:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:8px;">
+        
+        <button class="btn-primary" type="submit">Submit Inquiry</button>
+      </form>
+
+      <div style="text-align: center; margin-bottom: 15px;">
+        <span style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">— Or Contact Directly —</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <a href="https://www.facebook.com/jo.van.739978" target="_blank" class="hub-btn" style="background:#1877F2; color:#fff; font-size: 0.8rem; margin-bottom:0;">
+          <span>💬</span> Messenger
+        </a>
+        <a href="https://wa.me/639679314390" target="_blank" class="hub-btn" style="background:#25D366; color:#fff; font-size: 0.8rem; margin-bottom:0;">
+          <span>📱</span> WhatsApp
+        </a>
+        <a href="sms:+639679314390" class="hub-btn" style="background:var(--accent); color:#000; font-size: 0.8rem; margin-bottom:0;">
+          <span>✉️</span> Text SMS
+        </a>
+        <a href="mailto:hello@jovanfitness.ph" class="hub-btn" style="background:rgba(255,255,255,0.1); color:#fff; font-size: 0.8rem; margin-bottom:0;">
+          <span>📧</span> Email Us
+        </a>
+      </div>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 15px;">
+        Or visit us at Dictado Village during gym hours!
+      </p>
+    </div>
+  </div>
+
+  <footer style="text-align:center; padding:40px; color:var(--muted); font-size:0.8rem; border-top:1px solid rgba(255,255,255,0.05);">
+    © 2025 Jovan Fitness Gym. All Rights Reserved.
+  </footer>
+
+  <script>
+    // MOBILE MENU
+    const menu = document.getElementById('mobileMenu');
+    document.getElementById('hamburger').onclick = () => menu.classList.toggle('show');
+    menu.onclick = () => menu.classList.remove('show');
+
+    // MUSIC PLAYER LOGIC
+    const music = document.getElementById('bgMusic');
+    const musicToggle = document.getElementById('musicToggle');
+    let isPlaying = false;
+
+    musicToggle.onclick = () => {
+      if (isPlaying) {
+        music.pause();
+        musicToggle.innerHTML = "🎵";
+        musicToggle.classList.remove('playing');
+        musicToggle.title = "Play Music";
+      } else {
+        music.play();
+        musicToggle.innerHTML = "⏸️";
+        musicToggle.classList.add('playing');
+        musicToggle.title = "Pause Music";
+      }
+      isPlaying = !isPlaying;
+    };
+
+    // CAROUSEL LOGIC
+    function initCarousel(trackId, dotsId, prevId, nextId) {
+      const track = document.getElementById(trackId);
+      const dotsWrap = document.getElementById(dotsId);
+      const slides = track.children.length;
+      let idx = 0;
+      if (!track || !dotsWrap) return;
+      dotsWrap.innerHTML = ''; 
+      for(let i=0; i<slides; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i==0?' active':'');
+        dotsWrap.appendChild(d);
+      }
+      const update = () => {
+        track.style.transform = `translateX(-${idx * 100}%)`;
+        Array.from(dotsWrap.children).forEach((d, i) => d.classList.toggle('active', i==idx));
+      };
+      document.getElementById(nextId).onclick = () => { idx = (idx + 1) % slides; update(); };
+      document.getElementById(prevId).onclick = () => { idx = (idx - 1 + slides) % slides; update(); };
+    }
+    
+    initCarousel('facTrack', 'facDots', 'facPrev', 'facNext');
+    initCarousel('newsTrack', 'newsDots', 'newsPrev', 'newsNext');
+
+    // MODAL LOGIC
+    const modal = document.getElementById('promoModal');
+    function openPromoModal(name) { 
+      document.getElementById('modalTitle').innerText = name; 
+      document.getElementById('displayPromoName').innerText = name;
+      document.getElementById('hiddenPromoInput').value = name;
+      modal.style.display='flex'; 
+    }
+    function closePromoModal() { 
+      modal.style.display='none'; 
+    }
+    window.onclick = (e) => { 
+      if(e.target == modal) closePromoModal(); 
+    }
+  </script>
+</body>
+</html>
